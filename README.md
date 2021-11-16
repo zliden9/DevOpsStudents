@@ -8,7 +8,7 @@ HelloNetology
 -	tee | cat >> file2
 -	sort file | cat >> file2
 -	sort < file 1>> file2
-Если нет, то видимо я не понимаю задание.
+-Если нет, то видимо я не понимаю задание.
 -
 -
 -
