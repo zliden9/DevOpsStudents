@@ -42,6 +42,10 @@ openat(AT_FDCWD, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
 vim file1
 ps auxf | grep file1
 ps auxf | grep vim
+strace -o file2 -f vim file1
+После чего можно востановить файл
+
+Для перенаправления потока
 
 
 4)Занимают ли зомби-процессы какие-то ресурсы в ОС (CPU, RAM, IO)?
