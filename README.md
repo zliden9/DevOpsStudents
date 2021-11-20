@@ -43,7 +43,7 @@ sudo cat /proc/1010/fd/1>/home/vagrant/file1
 
 
 4)Занимают ли зомби-процессы какие-то ресурсы в ОС (CPU, RAM, IO)?
-
+Зомби процес занимает ресурсы ядра.
 
 
 5)В iovisor BCC есть утилита opensnoop:
