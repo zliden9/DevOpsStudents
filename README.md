@@ -32,14 +32,14 @@ openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libmagic.so.1", O_RDONLY|O_CLOEXEC) = 3
 Так как приложение продолжает писать в удаленный файл, место на диске постепенно заканчивается. 
 Основываясь на знаниях о перенаправлении потоков предложите способ обнуления открытого удаленного файла (чтобы освободить место на файловой системе).
 
-Нужно найти pid приложения ps auxf
-vim file1
-ps auxf | grep file1
-ps auxf | grep vim
-strace -o file2 -f vim file1
-После чего можно востановить файл
+ping ya.ru >file1
+sudo lsof | grep ping | grep file1
+ping      1010                       vagrant    1w      REG              253,0     4798     131099 /home/vagrant/file1
+rm file1
+sudo lsof | grep ping | grep file1
+ping      1010                       vagrant    1w      REG              253,0    36590     131099 /home/vagrant/file1 (deleted)
+sudo cat /proc/1010/fd/1>/home/vagrant/file1
 
-Для перенаправления потока
 
 
 4)Занимают ли зомби-процессы какие-то ресурсы в ОС (CPU, RAM, IO)?
