@@ -24,14 +24,8 @@ vagrant@netology1:~$ file /bin/bash
 
 Используя strace выясните, где находится база данных file на основании которой она делает свои догадки.
 
-strace -o file1 file | grep lib file1 >file2
+strace file 2>&1 | grep libmagic
 openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libmagic.so.1", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/liblzma.so.5", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libbz2.so.1.0", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
 
 3)Предположим, приложение пишет лог в текстовый файл. Этот файл оказался удален (deleted в lsof), 
 однако возможности сигналом сказать приложению переоткрыть файлы или просто перезапустить приложение – нет. 
