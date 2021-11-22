@@ -6,12 +6,12 @@
 Домашнее задание по лекции "Операционные системы (лекция 1)"
 Доработка 1 задания
 -------------------------------------------------------------------
--насколько я понял нас интересует mmap.
+- насколько я понял нас интересует mmap.
 
--strace /bin/bash -c 'cd /tmp' 2>&1 | grep cd >>file1
--vagrant@localhost ~ $ cat file1
--execve("/bin/bash", ["/bin/bash", "-c", "cd /tmp"], [/* 22 vars */]) = 0
--mmap(NULL, 2919792, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f75abcd7000
+- strace /bin/bash -c 'cd /tmp' 2>&1 | grep cd >>file1
+- vagrant@localhost ~ $ cat file1
+- execve("/bin/bash", ["/bin/bash", "-c", "cd /tmp"], [/* 22 vars */]) = 0
+- mmap(NULL, 2919792, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f75abcd7000
 -
 -
 -
