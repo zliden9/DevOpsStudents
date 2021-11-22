@@ -6,12 +6,14 @@
 Домашнее задание по лекции "Операционные системы (лекция 1)"
 Доработка 1 задания
 -------------------------------------------------------------------
-- насколько я понял нас интересует mmap.
-
-- strace /bin/bash -c 'cd /tmp' 2>&1 | grep cd >>file1
-- vagrant@localhost ~ $ cat file1
+- насколько я понял нас интересует chdir.
+- chdir — команда командной строки для изменения текущего рабочего каталога в Unix
+-
+- strace -o file1 /bin/bash -c 'cd /tmp'
+- vagrant@localhost ~ $ cat file1 | grep /\tmp
 - execve("/bin/bash", ["/bin/bash", "-c", "cd /tmp"], [/* 22 vars */]) = 0
-- mmap(NULL, 2919792, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f75abcd7000
+- stat("/tmp", {st_mode=S_IFDIR|S_ISVTX|0777, st_size=4096, ...}) = 0
+- chdir("/tmp")                           = 0
 -
 -
 -
