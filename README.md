@@ -7,6 +7,7 @@
 Доработка 1 задания
 -------------------------------------------------------------------
 -насколько я понял нас интересует mmap.
+
 -strace /bin/bash -c 'cd /tmp' 2>&1 | grep cd >>file1
 -vagrant@localhost ~ $ cat file1
 -execve("/bin/bash", ["/bin/bash", "-c", "cd /tmp"], [/* 22 vars */]) = 0
