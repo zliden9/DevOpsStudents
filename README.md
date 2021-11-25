@@ -233,7 +233,7 @@
 - 
 - 11)Создайте mkfs.ext4 ФС на получившемся LV.
 - 
-<\vagrant@vagrant:~$ sudo mkfs.ext4 /dev/vol_grp1/lvol0
+<\ vagrant@vagrant:~$ sudo mkfs.ext4 /dev/vol_grp1/lvol0
 mke2fs 1.45.5 (07-Jan-2020)
 Creating filesystem with 25600 4k blocks and 25600 inodes
 
