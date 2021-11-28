@@ -13,7 +13,7 @@ HOST: stackoverflow.com
 [press enter]
 [press enter]
 В ответе укажите полученный HTTP код, что он означает?
-> 
+```
 vagrant@vagrant:~$ sudo telnet stackoverflow.com 80
 Trying 151.101.65.69...
 Connected to stackoverflow.com.
@@ -45,7 +45,7 @@ Connection closed by foreign host.
 
 Мы запросили сореджимое страцицы и получили ответ с указанием того что страница переехала 301 Moved Permanently.
 Также в ответе видны некоторые найстройки страницы
-<
+```
 2)Повторите задание 1 в браузере, используя консоль разработчика F12.
 откройте вкладку Network
 отправьте запрос http://stackoverflow.com
