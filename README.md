@@ -106,10 +106,10 @@ Upgrade-Insecure-Requests: 1
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 OPR/81.0.4196.52
 ```
 - приложите скриншот консоли браузера в ответ.
-```
-(СКРИН)
-![Http](https://user-images.githubusercontent.com/92779046/143771759-ca27eaac-116a-4a62-8050-725c44c25910.PNG)
-```
+- 
+- (СКРИН)
+- ![Http](https://user-images.githubusercontent.com/92779046/143771759-ca27eaac-116a-4a62-8050-725c44c25910.PNG)
+- 
 - 3)Какой IP адрес у вас в интернете?
 ```
 37.204.205.149
