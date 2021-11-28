@@ -46,12 +46,12 @@ Connection closed by foreign host.
 Мы запросили сореджимое страцицы и получили ответ с указанием того что страница переехала 301 Moved Permanently.
 Также в ответе видны некоторые найстройки страницы
 ```
-2)Повторите задание 1 в браузере, используя консоль разработчика F12.
+- 2)Повторите задание 1 в браузере, используя консоль разработчика F12.
 откройте вкладку Network
 отправьте запрос http://stackoverflow.com
 найдите первый ответ HTTP сервера, откройте вкладку Headers
 укажите в ответе полученный HTTP код.
-
+```
 Request URL: http://stackoverflow.com/
 Request Method: GET
 Status Code: 307 Internal Redirect
@@ -61,9 +61,9 @@ Non-Authoritative-Reason: HSTS
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
 Upgrade-Insecure-Requests: 1
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 OPR/81.0.4196.52
-
-проверьте время загрузки страницы, какой запрос обрабатывался дольше всего?
-
+```
+- проверьте время загрузки страницы, какой запрос обрабатывался дольше всего?
+```
 Дольше всего обрабатывался http запрос на сам сайт с получением документа
 Request URL: https://stackoverflow.com/
 Request Method: GET
@@ -104,18 +104,18 @@ Sec-Fetch-Site: none
 Sec-Fetch-User: ?1
 Upgrade-Insecure-Requests: 1
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 OPR/81.0.4196.52
-
-приложите скриншот консоли браузера в ответ.
-
+```
+- приложите скриншот консоли браузера в ответ.
+```
 (СКРИН)
 ![Http](https://user-images.githubusercontent.com/92779046/143771759-ca27eaac-116a-4a62-8050-725c44c25910.PNG)
-
-3)Какой IP адрес у вас в интернете?
-
+```
+- 3)Какой IP адрес у вас в интернете?
+```
 37.204.205.149
-
-4)Какому провайдеру принадлежит ваш IP адрес? Какой автономной системе AS? Воспользуйтесь утилитой whois
-
+```
+- 4)Какому провайдеру принадлежит ваш IP адрес? Какой автономной системе AS? Воспользуйтесь утилитой whois
+```
 vagrant@vagrant:~$ whois -h whois.radb.net 37.204.205.149
 route:          37.204.0.0/16
 descr:          NCNET
@@ -132,10 +132,10 @@ remarks:        * data has been removed from this object.
 remarks:        * To view the original object, please query the RIPE Database at:
 remarks:        * http://www.ripe.net/whois
 remarks:        ****************************
-
-5)Через какие сети проходит пакет, отправленный с вашего компьютера на адрес 8.8.8.8? Через какие AS? 
+```
+- 5)Через какие сети проходит пакет, отправленный с вашего компьютера на адрес 8.8.8.8? Через какие AS? 
 Воспользуйтесь утилитой traceroute
-
+```
 vagrant@vagrant:~$ sudo traceroute -IA 8.8.8.8
 traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
  1  _gateway (10.0.2.2) [*]  0.245 ms  0.216 ms  0.207 ms
@@ -158,9 +158,9 @@ traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
 18  * * *
 19  * * *
 20  dns.google (8.8.8.8) [AS15169]  20.522 ms  23.366 ms  23.259 ms
-
-6)Повторите задание 5 в утилите mtr. На каком участке наибольшая задержка - delay?
-
+```
+- 6)Повторите задание 5 в утилите mtr. На каком участке наибольшая задержка - delay?
+```
 vagrant@vagrant:~$ mtr -rn 8.8.8.8
 Start: 2021-11-28T13:34:10+0000
 HOST: vagrant                     Loss%   Snt   Last   Avg  Best  Wrst StDev
@@ -184,11 +184,11 @@ HOST: vagrant                     Loss%   Snt   Last   Avg  Best  Wrst StDev
  18.|-- ???                       100.0    10    0.0   0.0   0.0   0.0   0.0
  19.|-- ???                       100.0    10    0.0   0.0   0.0   0.0   0.0
  20.|-- 8.8.8.8                   10.0%    10   19.5  19.3  17.7  19.7   0.6
-
-Наибольшая задержка на 9 хопе.
-
-7)Какие DNS сервера отвечают за доменное имя dns.google? Какие A записи? воспользуйтесь утилитой dig
-
+```
+- Наибольшая задержка на 9 хопе.
+- 
+- 7)Какие DNS сервера отвечают за доменное имя dns.google? Какие A записи? воспользуйтесь утилитой dig
+```
 vagrant@vagrant:~$ dig dns.google NS +noall +answer
 dns.google.             6726    IN      NS      ns1.zdns.google.
 dns.google.             6726    IN      NS      ns3.zdns.google.
@@ -205,3 +205,4 @@ vagrant@vagrant:~$ dig -x 8.8.8.8 +noall +answer
 8.8.8.8.in-addr.arpa.   7065    IN      PTR     dns.google.
 vagrant@vagrant:~$ dig -x 8.8.4.4 +noall +answer
 4.4.8.8.in-addr.arpa.   7069    IN      PTR     dns.google.
+```
