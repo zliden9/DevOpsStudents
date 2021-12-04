@@ -507,4 +507,4 @@ UNCONN        0             0                              [::]:rpc.portmapper  
 - 5)Используя diagrams.net, создайте L3 диаграмму вашей домашней сети или любой другой сети, с которой вы работали.
 ```
 https://viewer.diagrams.net/?tags=%7B%7D&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Untitled%20Diagram.drawio#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fzliden9%2FDevOpsStudents%2Fcircleci-project-setup%2FUntitled%2520Diagram.drawio
----
+```
