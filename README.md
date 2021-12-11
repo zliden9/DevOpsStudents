@@ -53,10 +53,9 @@ vagrant@vagrant:~$ sudo systemctl status apache2
              ├─14144 /usr/sbin/apache2 -k start
              └─14145 /usr/sbin/apache2 -k start
 ```
-```
-![apach](https://user-images.githubusercontent.com/92779046/145690786-2b62942d-f9b1-41ef-be70-b471cc2793c3.PNG)
 
-```
+- ![apach](https://user-images.githubusercontent.com/92779046/145690786-2b62942d-f9b1-41ef-be70-b471cc2793c3.PNG)
+
 - 4)Проверьте на TLS уязвимости произвольный сайт в интернете (кроме сайтов МВД, ФСБ, МинОбр, НацБанк, РосКосмос, РосАтом, РосНАНО и любых госкомпаний, объектов КИИ, ВПК ... и - - тому подобное).
 ```
 vagrant@vagrant:~$ git clone --depth 1 https://github.com/drwetter/testssl.sh.git
