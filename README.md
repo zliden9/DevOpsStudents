@@ -3,508 +3,287 @@
 -HelloNetology
 -
 -------------------------------------------------------------------
-Домашнее задание к занятию "3.7. Компьютерные сети, лекция 2"
+Домашнее задание к занятию "3.9. Элементы безопасности информационных систем"
 -------------------------------------------------------------------
-- 1)Проверьте список доступных сетевых интерфейсов на вашем компьютере. Какие команды есть для этого в Linux и в Windows?
+- 1)Установите Bitwarden плагин для браузера. Зарегестрируйтесь и сохраните несколько паролей.
+
 ```
-Для Windows это ipconfig /all, netsh interface show interface
-Для Linux это ifconfig,  ip link show
+![bitwarden](https://user-images.githubusercontent.com/92779046/145690764-a46730a7-5f49-4ed6-85bb-b8e0441d0a26.PNG)
 ```
-- 2)Какой протокол используется для распознавания соседа по сетевому интерфейсу? Какой пакет и команды есть в Linux для этого?
+- 2)Установите Google authenticator на мобильный телефон. Настройте вход в Bitwarden акаунт через Google authenticator OTP.
+``` 
+Пользуюсь YandexKey, установил на него.
 ```
-Протокол Neighbor Discovery Protocol, NDP
-Этот протокол устанавливает пять различных типов пакета ICMPv6 для выполнения функций IPv6, сходных с ARP, ICMP, IRDP и Router Redirect протоколов для IPv4.
-
-LLDP – протокол для обмена информацией между соседними устройствами
-apt install lldpd
-systemctl enable lldpd && systemctl start lldpd
-sudo lldpctl
-
-C пакетом dird2 можно посльзуясь протоколом rip sh rip neighbour
+- 3)Установите apache2, сгенерируйте самоподписанный сертификат, настройте тестовый сайт для работы по HTTPS.
 ```
-- 3)Какая технология используется для разделения L2 коммутатора на несколько виртуальных сетей? Какой пакет и команды есть в Linux для этого? Приведите пример конфига.
+sudo apt install apache2
+vagrant@vagrant:~$ pstree
+systemd─┬─VBoxService───8*[{VBoxService}]
+        ├─accounts-daemon───2*[{accounts-daemon}]
+        ├─agetty
+        ├─apache2───2*[apache2───26*[{apache2}]]
+vagrant@vagrant:~$ sudo a2enmod ssl
+Considering dependency setenvif for ssl:
+Module setenvif already enabled
+Considering dependency mime for ssl:
+Module mime already enabled
+Considering dependency socache_shmcb for ssl:
+Module socache_shmcb already enabled
+Module ssl already enabled
+vagrant@vagrant:~$ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+> -keyout /etc/ssl/private/apache-selfsigned.key \
+> -out /etc/ssl/certs/apache-selfsigned.crt \
+> -subj "/C=RU/ST=Moscow/L=Moscow/O=Company Name/OU=Org/CN=www.example.com"
+Generating a RSA private key
+.................+++++
+........+++++
+writing new private key to '/etc/ssl/private/apache-selfsigned.key'
+vagrant@vagrant:~$ sudo systemctl status apache2
+● apache2.service - The Apache HTTP Server
+     Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sat 2021-12-11 19:20:35 UTC; 6min ago
+       Docs: https://httpd.apache.org/docs/2.4/
+    Process: 13962 ExecStart=/usr/sbin/apachectl start (code=exited, status=0/SUCCESS)
+    Process: 14140 ExecReload=/usr/sbin/apachectl graceful (code=exited, status=0/SUCCESS)
+   Main PID: 13976 (apache2)
+      Tasks: 55 (limit: 1071)
+     Memory: 6.6M
+     CGroup: /system.slice/apache2.service
+             ├─13976 /usr/sbin/apache2 -k start
+             ├─14144 /usr/sbin/apache2 -k start
+             └─14145 /usr/sbin/apache2 -k start
 ```
-Для разделения коммутатора на несколько виртуальных сетей используется VLAN
-В Linux также устанавливается пакет VLAN
-vagrant@vagrant:~$ sudo apt install vlan
-Reading package lists... Done
-Building dependency tree
-Reading state information... Done
-The following NEW packages will be installed:
-  vlan
-0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
-Need to get 11.3 kB of archives.
-After this operation, 50.2 kB of additional disk space will be used.
-Get:1 http://archive.ubuntu.com/ubuntu focal-updates/universe amd64 vlan all 2.0.4ubuntu1.20.04.1 [11.3 kB]
-Fetched 11.3 kB in 10s (1,114 B/s)
-Selecting previously unselected package vlan.
-(Reading database ... 41581 files and directories currently installed.)
-Preparing to unpack .../vlan_2.0.4ubuntu1.20.04.1_all.deb ...
-Unpacking vlan (2.0.4ubuntu1.20.04.1) ...
-Setting up vlan (2.0.4ubuntu1.20.04.1) ...
-Processing triggers for man-db (2.9.1-1) ...
-
-vim /etc/network/interfaces
-# interfaces(5) file used by ifup(8) and ifdown(8)
-# Include files from /etc/network/interfaces.d:
-#source-directory /etc/network/interfaces.d
-
-auto vlan1
-iface vlan1 inet static
- address 192.168.56.1
- netmask 255.255.255.0
- vlan_raw_device eth0
-auto eth0.1
-iface eth0.1 inet static
- address 192.168.56.1
- netmask 255.255.255.0
- vlan_raw_device eth0
-
-vagrant@vagrant:~$ ip addr
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 08:00:27:73:60:cf brd ff:ff:ff:ff:ff:ff
-    inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic eth0
-       valid_lft 82121sec preferred_lft 82121sec
-    inet6 fe80::a00:27ff:fe73:60cf/64 scope link
-       valid_lft forever preferred_lft forever
-3: vlan1@eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 08:00:27:73:60:cf brd ff:ff:ff:ff:ff:ff
-    inet 192.168.56.1/24 brd 192.168.56.255 scope global vlan1
-       valid_lft forever preferred_lft forever
-    inet6 fe80::a00:27ff:fe73:60cf/64 scope link
-       valid_lft forever preferred_lft forever
 ```
-- 4)Какие типы агрегации интерфейсов есть в Linux? Какие опции есть для балансировки нагрузки? Приведите пример конфига.
+![apach](https://user-images.githubusercontent.com/92779046/145690786-2b62942d-f9b1-41ef-be70-b471cc2793c3.PNG)
 ```
-Агрегация в Linux возможно с пакетом bonding
-
-mode=0 (balance-rr)
-При этом методе объединения трафик распределяется по принципу «карусели»: пакеты по очереди направляются на сетевые карты объединённого интерфейса. 
-Например, если у нас есть физические интерфейсы eth0, eth1, and eth2, объединенные в bond0, первый пакет будет отправляться через eth0,
-второй — через eth1, третий — через eth2, а четвертый снова через eth0 и т.д.
-
-mode=1 (active-backup)
-Когда используется этот метод, активен только один физический интерфейс, 
-а остальные работают как резервные на случай отказа основного.
-
-mode=2 (balance-xor)
-В данном случае объединенный интерфейс определяет, через какую физическую сетевую карту отправить пакеты, 
-в зависимости от MAC-адресов источника и получателя.
-
-mode=3 (broadcast) Широковещательный режим, все пакеты отправляются через каждый интерфейс. 
-Имеет ограниченное применение, но обеспечивает значительную отказоустойчивость.
-
-mode=4 (802.3ad)
-Особый режим объединения. Для него требуется специально настраивать коммутатор, 
-к которому подключен объединенный интерфейс. Реализует стандарты объединения каналов IEEE и обеспечивает как увеличение пропускной способности, 
-так и отказоустойчивость.
-
-mode=5 (balance-tlb)
-Распределение нагрузки при передаче. Входящий трафик обрабатывается в обычном режиме, 
-а при передаче интерфейс определяется на основе данных о загруженности.
-
-mode=6 (balance-alb)
-Адаптивное распределение нагрузки. Аналогично предыдущему режиму, 
-но с возможностью балансировать также входящую нагрузку.
-
-source-directory /etc/network/interfaces.d
-
-auto eth0
-iface eth0 inet manual
-        bond-master bond0
-
-auto eth1
-        iface eth1 inet manual
-        bond-master bond0
-
-auto bond0
-iface bond0 inet manual
-        ipaddes 10.0.2.15
-        gateway 10.0.2.1
-        netmask 255.255.255.0
-        bond-mode 4
-        bond-miimon 100
-        bond-lacp-rate 1
-        bond-slaves eth0 eth1
+- 4)Проверьте на TLS уязвимости произвольный сайт в интернете (кроме сайтов МВД, ФСБ, МинОбр, НацБанк, РосКосмос, РосАтом, РосНАНО и любых госкомпаний, объектов КИИ, ВПК ... и - - тому подобное).
 ```
-- 5)Сколько IP адресов в сети с маской /29 ? Сколько /29 подсетей можно получить из сети с маской /24. 
-- Приведите несколько примеров /29 подсетей внутри сети 10.10.10.0/24.
+vagrant@vagrant:~$ git clone --depth 1 https://github.com/drwetter/testssl.sh.git
+Cloning into 'testssl.sh'...
+remote: Enumerating objects: 100, done.
+remote: Counting objects: 100% (100/100), done.
+remote: Compressing objects: 100% (93/93), done.
+remote: Total 100 (delta 14), reused 39 (delta 6), pack-reused 0
+Receiving objects: 100% (100/100), 8.55 MiB | 6.17 MiB/s, done.
+Resolving deltas: 100% (14/14), done.
+vagrant@vagrant:~$ cd testssl.sh
+
+vagrant@vagrant:~/testssl.sh$ ./testssl.sh -U --sneaky https://www.google.com/
+
+###########################################################
+    testssl.sh       3.1dev from https://testssl.sh/dev/
+    (6da72bc 2021-12-10 20:16:28 -- )
+
+      This program is free software. Distribution and
+             modification under GPLv2 permitted.
+      USAGE w/o ANY WARRANTY. USE IT AT YOUR OWN RISK!
+
+       Please file bugs @ https://testssl.sh/bugs/
+
+###########################################################
+
+ Using "OpenSSL 1.0.2-chacha (1.0.2k-dev)" [~183 ciphers]
+ on vagrant:./bin/openssl.Linux.x86_64
+ (built: "Jan 18 17:12:17 2019", platform: "linux-x86_64")
+
+
+Testing all IPv4 addresses (port 443): 74.125.131.99 74.125.131.106 74.125.131.147 74.125.131.104 74.125.131.105 74.125.131.103
+--------------------------------------------------------------------------------
+ Start 2021-12-11 19:38:57        -->> 74.125.131.99:443 (www.google.com) <<--
+
+ Further IP addresses:   74.125.131.106 74.125.131.147 74.125.131.104 74.125.131.105 74.125.131.103
+                         2a00:1450:4010:c0e::67 2a00:1450:4010:c0e::93 2a00:1450:4010:c0e::68 2a00:1450:4010:c0e::63
+ rDNS (74.125.131.99):   lu-in-f99.1e100.net.
+ Service detected:       HTTP
+
+
+ Testing vulnerabilities
+
+ Heartbleed (CVE-2014-0160)                not vulnerable (OK), no heartbeat extension
+ CCS (CVE-2014-0224)                       not vulnerable (OK)
+ Ticketbleed (CVE-2016-9244), experiment.  not vulnerable (OK)
+ ROBOT                                     not vulnerable (OK)
+ Secure Renegotiation (RFC 5746)           supported (OK)
+ Secure Client-Initiated Renegotiation     not vulnerable (OK)
+ CRIME, TLS (CVE-2012-4929)                not vulnerable (OK)
+ BREACH (CVE-2013-3587)                    potentially NOT ok, "br gzip" HTTP compression detected. - only supplied "/" tested
+                                           Can be ignored for static pages or if no secrets in the page
+ POODLE, SSL (CVE-2014-3566)               not vulnerable (OK)
+ TLS_FALLBACK_SCSV (RFC 7507)              Downgrade attack prevention supported (OK)
+ SWEET32 (CVE-2016-2183, CVE-2016-6329)    VULNERABLE, uses 64 bit block ciphers
+ FREAK (CVE-2015-0204)                     not vulnerable (OK)
+ DROWN (CVE-2016-0800, CVE-2016-0703)      not vulnerable on this host and port (OK)
+                                           make sure you don't use this certificate elsewhere with SSLv2 enabled services
+                                           https://censys.io/ipv4?q=7ACD7CE539A67DEFE216110170CE58B3D5400BA8ADF1C31F9FDA2E904340FC89 could help you to find out
+ LOGJAM (CVE-2015-4000), experimental      not vulnerable (OK): no DH EXPORT ciphers, no DH key detected with <= TLS 1.2
+ BEAST (CVE-2011-3389)                     TLS1: ECDHE-ECDSA-AES128-SHA ECDHE-ECDSA-AES256-SHA ECDHE-RSA-AES128-SHA
+                                                 ECDHE-RSA-AES256-SHA AES128-SHA AES256-SHA DES-CBC3-SHA
+                                           VULNERABLE -- but also supports higher protocols  TLSv1.1 TLSv1.2 (likely mitigated)
+ LUCKY13 (CVE-2013-0169), experimental     potentially VULNERABLE, uses cipher block chaining (CBC) ciphers with TLS. Check patches
+ Winshock (CVE-2014-6321), experimental    not vulnerable (OK)
+ RC4 (CVE-2013-2566, CVE-2015-2808)        no RC4 ciphers detected (OK)
+
+
+ Done 2021-12-11 19:39:34 [  39s] -->> 74.125.131.99:443 (www.google.com) <<--
+
+--------------------------------------------------------------------------------
+ Start 2021-12-11 19:39:34        -->> 74.125.131.106:443 (www.google.com) <<--
+
+ Further IP addresses:   74.125.131.99 74.125.131.147 74.125.131.104 74.125.131.105 74.125.131.103
+                         2a00:1450:4010:c0e::67 2a00:1450:4010:c0e::93 2a00:1450:4010:c0e::68 2a00:1450:4010:c0e::63
+ rDNS (74.125.131.106):  lu-in-f106.1e100.net.
+ Service detected:       HTTP
+
+
+ Testing vulnerabilities
+
+ Heartbleed (CVE-2014-0160)                not vulnerable (OK), no heartbeat extension
+ CCS (CVE-2014-0224)                       not vulnerable (OK)
+ Ticketbleed (CVE-2016-9244), experiment.  not vulnerable (OK)
+
+Дальше Очень большая портянка.
 ```
-В сети с маской /29 8 адресор
-В сети с маской /24 256 адресов. 256/8=32 подсети можно получить.
-vagrant@vagrant:~$ ipcalc 10.10.10.0/24 /29
-Address:   10.10.10.0           00001010.00001010.00001010. 00000000
-Netmask:   255.255.255.0 = 24   11111111.11111111.11111111. 00000000
-Wildcard:  0.0.0.255            00000000.00000000.00000000. 11111111
-=>
-Network:   10.10.10.0/24        00001010.00001010.00001010. 00000000
-HostMin:   10.10.10.1           00001010.00001010.00001010. 00000001
-HostMax:   10.10.10.254         00001010.00001010.00001010. 11111110
-Broadcast: 10.10.10.255         00001010.00001010.00001010. 11111111
-Hosts/Net: 254                   Class A, Private Internet
-
-Subnets after transition from /24 to /29
-
-Netmask:   255.255.255.248 = 29 11111111.11111111.11111111.11111 000
-Wildcard:  0.0.0.7              00000000.00000000.00000000.00000 111
-
- 1.
-Network:   10.10.10.0/29        00001010.00001010.00001010.00000 000
-HostMin:   10.10.10.1           00001010.00001010.00001010.00000 001
-HostMax:   10.10.10.6           00001010.00001010.00001010.00000 110
-Broadcast: 10.10.10.7           00001010.00001010.00001010.00000 111
-Hosts/Net: 6                     Class A, Private Internet
-
- 2.
-Network:   10.10.10.8/29        00001010.00001010.00001010.00001 000
-HostMin:   10.10.10.9           00001010.00001010.00001010.00001 001
-HostMax:   10.10.10.14          00001010.00001010.00001010.00001 110
-Broadcast: 10.10.10.15          00001010.00001010.00001010.00001 111
-Hosts/Net: 6                     Class A, Private Internet
-
- 3.
-Network:   10.10.10.16/29       00001010.00001010.00001010.00010 000
-HostMin:   10.10.10.17          00001010.00001010.00001010.00010 001
-HostMax:   10.10.10.22          00001010.00001010.00001010.00010 110
-Broadcast: 10.10.10.23          00001010.00001010.00001010.00010 111
-Hosts/Net: 6                     Class A, Private Internet
+- 5)Установите на Ubuntu ssh сервер, сгенерируйте новый приватный ключ. Скопируйте свой публичный ключ на другой сервер. Подключитесь к серверу по SSH-ключу.
 ```
--6)Задача: вас попросили организовать стык между 2-мя организациями. Диапазоны 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 уже заняты. 
-- Из какой подсети допустимо взять частные IP адреса? Маску выберите из расчета максимум 40-50 хостов внутри подсети.
+vagrant@vagrant:~$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/vagrant/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/vagrant/.ssh/id_rsa
+Your public key has been saved in /home/vagrant/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:SUHd5dXOrzihZMUDRUffzaE8b9FdjVBab2j1+LhniLY vagrant@vagrant
+The key's randomart image is:
++---[RSA 3072]----+
+|       .o. ++=*o*|
+|         .o o=oO@|
+|        .  o.+=+@|
+|       . .  +.o++|
+|        S  . ..oo|
+|          o ...o.|
+|         o .ooo.o|
+|          ..o..o |
+|            E.   |
++----[SHA256]-----+
+
+vagrant@vagrant:~$ ssh-copy-id vagrant@192.168.199.10
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/vagrant/.ssh/id_rsa.pub"
+The authenticity of host '192.168.199.10 (192.168.199.10)' can't be established.
+ECDSA key fingerprint is SHA256:wSHl+h4vAtTT7mbkj2lbGyxWXWTUf6VUliwpncjwLPM.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+vagrant@192.168.199.10's password:
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'vagrant@192.168.199.10'"
+and check to make sure that only the key(s) you wanted were added.
+
+vagrant@vagrant:~$ ssh vagrant@192.168.199.10
+Welcome to Ubuntu 20.04.2 LTS (GNU/Linux 5.4.0-80-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Sat 11 Dec 2021 07:50:00 PM UTC
+
+  System load:           0.0
+  Usage of /:            2.5% of 61.31GB
+  Memory usage:          19%
+  Swap usage:            0%
+  Processes:             120
+  Users logged in:       1
+  IPv4 address for eth0: 192.168.199.10
+  IPv6 address for eth0: 2a02:2168:91ba:400:b8c2:2d1:5c86:faea
+
+
+This system is built by the Bento project by Chef Software
+More information can be found at https://github.com/chef/bento
+Last login: Sat Dec 11 19:43:39 2021 from 192.168.199.2
 ```
-100.64.0.0 — 100.127.255.255 (маска подсети 255.192.0.0 или /10)
-Данная подсеть рекомендована согласно RFC 6598 для использования в качестве адресов для CGN (Carrier-Grade NAT).
+- 6)Переименуйте файлы ключей из задания 5. Настройте файл конфигурации SSH клиента, так чтобы вход на удаленный сервер осуществлялся по имени сервера.
 ```
-- 7)Как проверить ARP таблицу в Linux, Windows? Как очистить ARP кеш полностью? Как из ARP таблицы удалить только один нужный IP?
+vagrant@vagrant:~$ cp ~/.ssh/id_rsa ~/.ssh/id_rsa1
+vagrant@vagrant:~$ ls -li ~/.ssh/id_rs*
+262148 -rw------- 1 vagrant vagrant 2602 Dec 11 19:48 /home/vagrant/.ssh/id_rsa
+262152 -rw------- 1 vagrant vagrant 2602 Dec 11 19:57 /home/vagrant/.ssh/id_rsa1
+
+vagrant@vagrant:~$ mkdir -p ~/.ssh && chmod 700 ~/.ssh
+vagrant@vagrant:~$ sudo vim ~/.ssh/config && chmod 600 ~/.ssh/config
+
+Host vagrant
+ HostName 192.168.199.10
+ IdentityFile ~/.ssh/id_rsa1
+ User vagrant
+ #Port 2222
+ #StrictHostKeyChecking no
+#Host *
+ User vagrant
+ IdentityFile ~/.ssh/id_rsa1
+ Protocol 2
+
+vagrant@vagrant:~$ ssh vagrant
+Welcome to Ubuntu 20.04.2 LTS (GNU/Linux 5.4.0-80-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Sat 11 Dec 2021 08:07:16 PM UTC
+
+  System load:           0.0
+  Usage of /:            2.5% of 61.31GB
+  Memory usage:          19%
+  Swap usage:            0%
+  Processes:             122
+  Users logged in:       1
+  IPv4 address for eth0: 192.168.199.10
+  IPv6 address for eth0: 2a02:2168:91ba:400:b8c2:2d1:5c86:faea
+
+
+This system is built by the Bento project by Chef Software
+More information can be found at https://github.com/chef/bento
+Last login: Sat Dec 11 20:06:40 2021 from 192.168.199.10
 ```
-Windows : арп таблица arp -a, очистить кеш netsh interface ip delete arpcache, удалить одну запись arp -d <нужная запись>.
-Linux :  арп таблица ip neighbour, очистить кеш ip -s -s neigh flush all, удалить одну запись arp -d <нужная запись>.
+- 7)Соберите дамп трафика утилитой tcpdump в формате pcap, 100 пакетов. Откройте файл pcap в Wireshark.
 ```
--
--------------------------------------------------------------------
-Домашнее задание к занятию "3.8. Компьютерные сети, лекция 3"
--------------------------------------------------------------------
-- 1)Подключитесь к публичному маршрутизатору в интернет. Найдите маршрут к вашему публичному IP
-- telnet route-views.routeviews.org
-- Username: rviews
-- show ip route x.x.x.x/32
-- show bgp x.x.x.x/32
-```
-vagrant@vagrant:~$ telnet route-views.routeviews.org
-Trying 128.223.51.103...
-Connected to route-views.routeviews.org.
-Escape character is '^]'.
-C
-**********************************************************************
+vagrant@vagrant:~$ tcpdump -D
+1.eth0 [Up, Running]
+2.lo [Up, Running, Loopback]
+3.any (Pseudo-device that captures on all interfaces) [Up, Running]
+4.bluetooth-monitor (Bluetooth Linux Monitor) [none]
+5.nflog (Linux netfilter log (NFLOG) interface) [none]
+6.nfqueue (Linux netfilter queue (NFQUEUE) interface) [none]
 
-                    RouteViews BGP Route Viewer
-                    route-views.routeviews.org
+vagrant@vagrant:~$ sudo tcpdump -w test.pcap -c 100 -i eth0
+tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+100 packets captured
+103 packets received by filter
+0 packets dropped by kernel
 
- route views data is archived on http://archive.routeviews.org
-
- This hardware is part of a grant by the NSF.
- Please contact help@routeviews.org if you have questions, or
- if you wish to contribute your view.
-
- This router has views of full routing tables from several ASes.
- The list of peers is located at http://www.routeviews.org/peers
- in route-views.oregon-ix.net.txt
-
- NOTE: The hardware was upgraded in August 2014.  If you are seeing
- the error message, "no default Kerberos realm", you may want to
- in Mac OS X add "default unset autologin" to your ~/.telnetrc
-
- To login, use the username "rviews".
-
- **********************************************************************
-
-
-User Access Verification
-
-Username: rviews
-route-views>show ip route 37.204.205.149
-Routing entry for 37.204.0.0/16
-  Known via "bgp 6447", distance 20, metric 0
-  Tag 3356, type external
-  Last update from 4.68.4.46 2w3d ago
-  Routing Descriptor Blocks:
-  * 4.68.4.46, from 4.68.4.46, 2w3d ago
-      Route metric is 0, traffic share count is 1
-      AS Hops 3
-      Route tag 3356
-      MPLS label: none
-route-views>show bgp 37.204.205.149
-BGP routing table entry for 37.204.0.0/16, version 1372692932
-Paths: (24 available, best #11, table default)
-  Not advertised to any peer
-  Refresh Epoch 3
-  3303 1273 12389 42610
-    217.192.89.50 from 217.192.89.50 (138.187.128.158)
-      Origin IGP, localpref 100, valid, external
-      Community: 1273:12276 1273:32090 3303:1004 3303:1006 3303:3056
-      path 7FE01D5E17C8 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  4901 6079 1299 42610
-    162.250.137.254 from 162.250.137.254 (162.250.137.254)
-      Origin incomplete, localpref 100, valid, external
-      Community: 65000:10100 65000:10300 65000:10400
-      path 7FE0BDA16600 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  7660 2516 12389 42610
-    203.181.248.168 from 203.181.248.168 (203.181.248.168)
-      Origin IGP, localpref 100, valid, external
-      Community: 2516:1050 7660:9003
-      path 7FE16E3E4CC8 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  3267 1299 42610
-    194.85.40.15 from 194.85.40.15 (185.141.126.1)
-      Origin incomplete, metric 0, localpref 100, valid, external
-      path 7FE1133D4BB0 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  57866 1299 42610
-    37.139.139.17 from 37.139.139.17 (37.139.139.17)
-      Origin IGP, metric 0, localpref 100, valid, external
-      Community: 1299:30000 57866:100 57866:101 57866:501
-      path 7FE157EE1438 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  7018 1299 42610
-    12.0.1.63 from 12.0.1.63 (12.0.1.63)
-      Origin incomplete, localpref 100, valid, external
-      Community: 7018:5000 7018:37232
-      path 7FE0E360F6A8 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  3333 1273 12389 42610
-    193.0.0.56 from 193.0.0.56 (193.0.0.56)
-      Origin IGP, localpref 100, valid, external
-      Community: 1273:12276 1273:32090
-      path 7FE14CFB76E0 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  49788 12552 12389 12389 12389 12389 12389 12389 42610
-    91.218.184.60 from 91.218.184.60 (91.218.184.60)
-      Origin IGP, localpref 100, valid, external
-      Community: 12552:12000 12552:12100 12552:12101 12552:22000
-      Extended Community: 0x43:100:1
-      path 7FE170A3BFF0 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  20912 3257 12389 12389 12389 12389 12389 12389 42610
-    212.66.96.126 from 212.66.96.126 (212.66.96.126)
-      Origin IGP, localpref 100, valid, external
-      Community: 3257:4000 3257:8794 3257:50001 3257:50110 3257:54900 3257:54901 20912:65004
-      path 7FE105A7B6C0 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  8283 1299 42610
-    94.142.247.3 from 94.142.247.3 (94.142.247.3)
-      Origin incomplete, metric 0, localpref 100, valid, external
-      Community: 1299:30000 8283:1 8283:101
-      unknown transitive attribute: flag 0xE0 type 0x20 length 0x18
-        value 0000 205B 0000 0000 0000 0001 0000 205B
-              0000 0005 0000 0001
-      path 7FE1840C5208 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  3356 1299 42610
-    4.68.4.46 from 4.68.4.46 (4.69.184.201)
-      Origin IGP, metric 0, localpref 100, valid, external, best
-      Community: 3356:3 3356:22 3356:86 3356:575 3356:666 3356:903 3356:2012
-      path 7FE16DC9E1A8 RPKI State not found
-      rx pathid: 0, tx pathid: 0x0
-  Refresh Epoch 1
-  2497 12389 42610
-    202.232.0.2 from 202.232.0.2 (58.138.96.254)
-      Origin IGP, localpref 100, valid, external
-      path 7FE12600CFD0 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  1221 4637 1273 12389 42610
-    203.62.252.83 from 203.62.252.83 (203.62.252.83)
-      Origin IGP, localpref 100, valid, external
-      path 7FE136F01410 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  852 1299 42610
-    154.11.12.212 from 154.11.12.212 (96.1.209.43)
-      Origin IGP, metric 0, localpref 100, valid, external
-      path 7FE02C0A8C10 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  20130 6939 1273 12389 42610
-    140.192.8.16 from 140.192.8.16 (140.192.8.16)
-      Origin IGP, localpref 100, valid, external
-      path 7FE0F5D1B810 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  701 1273 12389 42610
-    137.39.3.55 from 137.39.3.55 (137.39.3.55)
-      Origin IGP, localpref 100, valid, external
-      path 7FE170EF0368 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  3257 12389 12389 12389 12389 12389 12389 42610
-    89.149.178.10 from 89.149.178.10 (213.200.83.26)
-      Origin IGP, metric 10, localpref 100, valid, external
-      Community: 3257:4000 3257:8794 3257:50001 3257:50110 3257:54900 3257:54901
-      path 7FE09D9E82B8 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  3549 3356 1299 42610
-    208.51.134.254 from 208.51.134.254 (67.16.168.191)
-      Origin IGP, metric 0, localpref 100, valid, external
-      Community: 3356:3 3356:22 3356:86 3356:575 3356:666 3356:903 3356:2011 3549:2581 3549:30840
-      path 7FE12286D838 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  53767 174 174 1299 42610
-    162.251.163.2 from 162.251.163.2 (162.251.162.3)
-      Origin incomplete, localpref 100, valid, external
-      Community: 174:21000 174:22013 53767:5000
-      path 7FE118D71E18 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  101 3356 1299 42610
-    209.124.176.223 from 209.124.176.223 (209.124.176.223)
-      Origin IGP, localpref 100, valid, external
-      Community: 101:20100 101:20110 101:22100 3356:3 3356:22 3356:86 3356:575 3356:666 3356:903 3356:2012
-      Extended Community: RT:101:22100
-      path 7FE184F00868 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  3561 209 3356 1299 42610
-    206.24.210.80 from 206.24.210.80 (206.24.210.80)
-      Origin IGP, localpref 100, valid, external
-      path 7FE0C02D4B58 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  1351 6939 1273 12389 42610
-    132.198.255.253 from 132.198.255.253 (132.198.255.253)
-      Origin IGP, localpref 100, valid, external
-      path 7FE102B14048 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  6939 1273 12389 42610
-    64.71.137.241 from 64.71.137.241 (216.218.252.164)
-      Origin IGP, localpref 100, valid, external
-      path 7FE02FF53290 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  19214 174 1299 42610
-    208.74.64.40 from 208.74.64.40 (208.74.64.40)
-      Origin incomplete, localpref 100, valid, external
-      Community: 174:21000 174:22013
-      path 7FE0AB775048 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-```
-- 2)Создайте dummy0 интерфейс в Ubuntu. Добавьте несколько статических маршрутов. Проверьте таблицу маршрутизации.
-```
-vagrant@vagrant:~$ ip route
-default via 10.0.2.2 dev eth0 proto dhcp src 10.0.2.15 metric 100
-10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.15
-10.0.2.2 dev eth0 proto dhcp scope link src 10.0.2.15 metric 100
-
-vagrant@vagrant:~$ sudo modprobe -v dummy numdummies=2
-vagrant@vagrant:~$ lsmod | grep dummy
-dummy                  16384  0
-vagrant@vagrant:~$ ip addr | grep dummy
-vagrant@vagrant:~$ sudo ip link add dummy0 type dummy
-vagrant@vagrant:~$ sudo ip link add dummy2 type dummy
-3: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-vagrant@vagrant:~$ sudo ip addr add 192.168.1.1/24 dev dummy0
-vagrant@vagrant:~$ sudo ip addr add 192.168.2.1/24 dev dummy2
-vagrant@vagrant:~$ ip addr | grep dummy
-3: dummy0: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
-    inet 192.168.1.1/24 scope global dummy0
-    inet 192.168.2.1/24 scope global dummy2
-vagrant@vagrant:~$ sudo ip link set dummy0 up
-vagrant@vagrant:~$ sudo ip link set dummy2 up
-vagrant@vagrant:~$ ip route
-default via 10.0.2.2 dev eth0 proto dhcp src 10.0.2.15 metric 100
-10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.15
-10.0.2.2 dev eth0 proto dhcp scope link src 10.0.2.15 metric 100
-192.168.1.0/24 dev dummy0 proto kernel scope link src 192.168.1.1
-192.168.2.0/24 dev dummy2 proto kernel scope link src 192.168.2.1
-
-sudo vim /etc/network/interfaces
-auto dummy0
-iface dummy0 inet static
-address 192.168.1.1
-netmask 255.255.255.0
-
-auto dummy2
-iface dummy2 inet static
-address 192.168.2.1
-netmask 255.255.255.0
-```
-- 3)Проверьте открытые TCP порты в Ubuntu, какие протоколы и приложения используют эти порты? Приведите несколько примеров.
-```
-vagrant@vagrant:~$ sudo ss -s
-Total: 137
-TCP:   6 (estab 1, closed 0, orphaned 0, timewait 0)
-
-Transport Total     IP        IPv6
-RAW       1         0         1
-UDP       4         3         1
-TCP       6         4         2
-INET      11        7         4
-FRAG      0         0         0
-
-vagrant@vagrant:~$ sudo ss -ta
-State        Recv-Q       Send-Q               Local Address:Port                 Peer Address:Port       Process
-LISTEN       0            4096                       0.0.0.0:sunrpc                    0.0.0.0:*
-LISTEN       0            4096                 127.0.0.53%lo:domain                    0.0.0.0:*
-LISTEN       0            128                        0.0.0.0:ssh                       0.0.0.0:*
-ESTAB        0            0                        10.0.2.15:ssh                      10.0.2.2:1260
-LISTEN       0            4096                          [::]:sunrpc                       [::]:*
-LISTEN       0            128                           [::]:ssh                          [::]:*
-
-vagrant@vagrant:~$ sudo ss -tarep
-State         Recv-Q        Send-Q                Local Address:Port                           Peer Address:Port        Process
-LISTEN        0             4096                        0.0.0.0:rpc.portmapper                      0.0.0.0:*
- users:(("rpcbind",pid=620,fd=4),("systemd",pid=1,fd=35)) ino:16030 sk:89 <->
-LISTEN        0             4096                   localhost%lo:domain                              0.0.0.0:*
- users:(("systemd-resolve",pid=621,fd=13)) uid:101 ino:22761 sk:8a <->
-LISTEN        0             128                         0.0.0.0:ssh                                 0.0.0.0:*
- users:(("sshd",pid=761,fd=3)) ino:24025 sk:8b <->
-ESTAB         0             0                           vagrant:ssh                                _gateway:1260         users:(("sshd",pid=921,fd=4),("sshd",pid=881,fd=4)) timer:(keepalive,84min,0) ino:25616 sk:35 <->
-LISTEN        0             4096                           [::]:rpc.portmapper                         [::]:*
- users:(("rpcbind",pid=620,fd=6),("systemd",pid=1,fd=37)) ino:16034 sk:8c v6only:1 <->
-LISTEN        0             128                            [::]:ssh                                    [::]:*
- users:(("sshd",pid=761,fd=4)) ino:24027 sk:8d v6only:1 <->	
-```
-- 4)Проверьте используемые UDP сокеты в Ubuntu, какие протоколы и приложения используют эти порты?
-```
-vagrant@vagrant:~$ sudo ss -ua
-State        Recv-Q       Send-Q               Local Address:Port                 Peer Address:Port       Process
-UNCONN       0            0                    127.0.0.53%lo:domain                    0.0.0.0:*
-UNCONN       0            0                   10.0.2.15%eth0:bootpc                    0.0.0.0:*
-UNCONN       0            0                          0.0.0.0:sunrpc                    0.0.0.0:*
-UNCONN       0            0                             [::]:sunrpc                       [::]:*
-
-vagrant@vagrant:~$ sudo ss -uarep
-State         Recv-Q        Send-Q                Local Address:Port                           Peer Address:Port        Process
-UNCONN        0             0                      localhost%lo:domain                              0.0.0.0:*
- users:(("systemd-resolve",pid=621,fd=12)) uid:101 ino:22760 sk:85 <->
-UNCONN        0             0                      vagrant%eth0:bootpc                              0.0.0.0:*
- users:(("systemd-network",pid=399,fd=19)) uid:100 ino:17268 sk:86 <->
-UNCONN        0             0                           0.0.0.0:rpc.portmapper                      0.0.0.0:*
- users:(("rpcbind",pid=620,fd=5),("systemd",pid=1,fd=36)) ino:16031 sk:87 <->
-UNCONN        0             0                              [::]:rpc.portmapper                         [::]:*
- users:(("rpcbind",pid=620,fd=7),("systemd",pid=1,fd=38)) ino:16037 sk:88 v6only:1 <->
-```
-- 5)Используя diagrams.net, создайте L3 диаграмму вашей домашней сети или любой другой сети, с которой вы работали.
-```
-https://viewer.diagrams.net/?tags=%7B%7D&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Untitled%20Diagram.drawio#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fzliden9%2FDevOpsStudents%2Fcircleci-project-setup%2FUntitled%2520Diagram.drawio
+vagrant@vagrant:~$ apt show wireshark
+Package: wireshark
+Version: 3.2.3-1
+Priority: optional
+Section: universe/net
+Origin: Ubuntu
+Maintainer: Balint Reczey <rbalint@ubuntu.com>
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 59.4 kB
+Depends: wireshark-qt (= 3.2.3-1)
+Conflicts: ethereal (<< 1.0.0-3)
+Replaces: ethereal (<< 1.0.0-3)
+Homepage: https://www.wireshark.org/
+Download-Size: 5,088 B
+APT-Manual-Installed: yes
+APT-Sources: http://archive.ubuntu.com/ubuntu focal/universe amd64 Packages
+Description: network traffic analyzer - meta-package
+ Wireshark is a network "sniffer" - a tool that captures and analyzes
+ packets off the wire. Wireshark can decode too many protocols to list
+ here.
+ .
+ This is a meta-package for Wireshark.
 ```
