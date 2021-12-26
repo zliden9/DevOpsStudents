@@ -3,144 +3,63 @@
 -HelloNetology
 -
 ---
-# Домашнее задание к занятию "4.2. Использование Python для решения типовых DevOps задач"
+# Домашнее задание к занятию "4.3. Языки разметки JSON и YAML"
+
 
 ## Обязательная задача 1
+Мы выгрузили JSON, который получили через API запрос к нашему сервису:
+```
+    { "info" : "Sample JSON output from our service\t",
+        "elements" :[
+            { "name" : "first",
+            "type" : "server",
+            "ip" : 7175 
+            }
+            { "name" : "second",
+            "type" : "proxy",
+            "ip : 71.78.22.43
+            }
+        ]
+    }
+```
+  Нужно найти и исправить все ошибки, которые допускает наш сервис
 
-Есть скрипт:
+# Ответ
+
 ```python
-#!/usr/bin/env python3
-a = 1
-b = '2'
-c = a + b
-```
 
-### Вопросы:
-| Вопрос  | Ответ |
-| ------------- | ------------- |
-| Какое значение будет присвоено переменной `c`?  | ???  |
-| Как получить для переменной `c` значение 12?  | ???  |
-| Как получить для переменной `c` значение 3?  | ???  |
+В строчке с ip не хватает " для определения строковых значенией.
+Также в конце первого блока не хватает ,
 
-```
-1) Будет ошибка TypeError: unsupported operand type(s) for +: 'int' and 'str', что означает что разность типа переменных не позволяет выполнить арифметичесское произведение.
-2) Нужно переменную а превратить в stp: a = '1'
-3) Нужно переменную b превратить в int: b = 2
+    { "info" : "Sample JSON output from our service\t",
+        "elements" :[
+            { "name" : "first",
+            "type" : "server",
+            "ip" : 7175 
+            },
+            { "name" : "second",
+            "type" : "proxy",
+            "ip" : "71.78.22.43"
+            }
+        ]
+    }
 ```
 
 ## Обязательная задача 2
-Мы устроились на работу в компанию, где раньше уже был DevOps Engineer. Он написал скрипт, позволяющий узнать, 
-какие файлы модифицированы в репозитории, относительно локальных изменений. Этим скриптом недовольно начальство, 
-потому что в его выводе есть не все изменённые файлы, а также непонятен полный путь к директории, где они находятся. 
-Как можно доработать скрипт ниже, чтобы он исполнял требования вашего руководителя?
-
-```python
-#!/usr/bin/env python3
-
-import os
-
-bash_command = ["cd ~/netology/sysadm-homeworks", "git status"]
-result_os = os.popen(' && '.join(bash_command)).read()
-is_change = False
-for result in result_os.split('\n'):
-    if result.find('modified') != -1:
-        prepare_result = result.replace('\tmodified:   ', '')
-        print(prepare_result)
-        break
-```
+В прошлый рабочий день мы создавали скрипт, позволяющий опрашивать веб-сервисы и получать их IP. 
+К уже реализованному функционалу нам нужно добавить возможность записи JSON и YAML файлов, описывающих наши сервисы. 
+Формат записи JSON по одному сервису: `{ "имя сервиса" : "его IP"}`. Формат записи YAML по одному сервису: `- имя сервиса: его IP`. 
+Если в момент исполнения скрипта меняется IP у сервиса - он должен так же поменяться в yml и json файле.
 
 ### Ваш скрипт:
-```
-Переменная is_change в данном случае лишняя
-break в рамках обработки запроса прерывает вывод после первого прохода и в результате мы не получает выод со всеми изменениями.
-```
 ```python
-#!/usr/bin/env python3
-
-import os
-
-bash_command = ["cd /home/vagrant/DevOpsStudents", "git status"]
-result_os = os.popen(' && '.join(bash_command)).read()
-for result in result_os.split('\n'):
-    if result.find('modified') != -1:
-        prepare_result = result.replace('\tmodified:   ', '')
-        print(prepare_result)
-```
-
-### Вывод скрипта при запуске при тестировании:
-```
-vagrant@vagrant:~/DevOpsStudents$ git status
-On branch circleci-project-setup
-Your branch is ahead of 'origin/circleci-project-setup' by 3 commits.
-  (use "git push" to publish your local commits)
-
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-        modified:   nanana.txt
-        modified:   pyTest.py
-
-no changes added to commit (use "git add" and/or "git commit -a")
-vagrant@vagrant:~/DevOpsStudents$ cd ../
-vagrant@vagrant:~$ python3.8 pythonTest.py
-nanana.txt
-pyTest.py
-```
-
-## Обязательная задача 3
-1. Доработать скрипт выше так, чтобы он мог проверять не только локальный репозиторий в текущей директории, 
-а также умел воспринимать путь к репозиторию, который мы передаём как входной параметр. 
-Мы точно знаем, что начальство коварное и будет проверять работу этого скрипта в директориях, которые не являются локальными репозиториями.
-```
-Для приёма входящих аргументо добавил модуль sys. Далее для обработки запроса исползовал метод .argv[1]
-```
-### Ваш скрипт:
-```python
-#!/usr/bin/env python3
-
-import os
-import sys
-
-pwd = sys.argv[1]
-bash_command = ["cd "+pwd, "git status"]
-result_os = os.popen(' && '.join(bash_command)).read()
-for result in result_os.split('\n'):
-    if result.find('modified') != -1:
-        prepare_result = result.replace('\tmodified: ', '')
-        print(pwd)
-	print(prepare_result)
-```
-
-### Вывод скрипта при запуске при тестировании:
-```
-root@vagrant:/home/vagrant/DevOpsStudents# python3.8 pyTest.py /home/vagrant/DevOpsStudents/
-/home/vagrant/DevOpsStudents/
-  nanana.txt
-/home/vagrant/DevOpsStudents/
-  pyTest.py
-```
-
-## Обязательная задача 4
-1. Наша команда разрабатывает несколько веб-сервисов, доступных по http.
- Мы точно знаем, что на их стенде нет никакой балансировки, кластеризации, 
-за DNS прячется конкретный IP сервера, где установлен сервис. 
-Проблема в том, что отдел, занимающийся нашей инфраструктурой очень часто меняет нам сервера, 
-поэтому IP меняются примерно раз в неделю, при этом сервисы сохраняют за собой DNS имена. 
-Это бы совсем никого не беспокоило, если бы несколько раз сервера не уезжали в такой сегмент сети нашей компании, 
-который недоступен для разработчиков. 
-Мы хотим написать скрипт, который опрашивает веб-сервисы, получает их IP, 
-выводит информацию в стандартный вывод в виде: <URL сервиса> - <его IP>. Также, 
-должна быть реализована возможность проверки текущего IP сервиса c его IP из предыдущей проверки. 
-Если проверка будет провалена - оповестить об этом в стандартный вывод сообщением: [ERROR] <URL сервиса> IP mismatch: <старый IP> <Новый IP>. 
-Будем считать, что наша разработка реализовала сервисы: `drive.google.com`, `mail.google.com`, `google.com`.
-```
-С помощью подгруженного модуля socket собераем пул доступных адресов для их послудущего мониторинга.
-```
-### Ваш скрипт:
-```python
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 
 import socket as soc
+import json
+import yaml
+
+filePython = "/home/vagrant/filePython.py"
 
 wait = 3
 soc1 = soc.gethostbyname_ex('drive.google.com')
@@ -155,23 +74,75 @@ print(str(web_ser['mail.google.com']))
 i = 1
 init = 0
 
-while 1==1 :
+while True :
   for host in web_ser:
     ip = soc.gethostbyname(host)
     if ip != web_ser[host]:
       if i==1 and init !=1:
-        print(' [ERROR] ' + str(host) +' IP mistmatch: '+ip)
-      web_ser[host]=ip
+        with open(filePython, 'a') as file1:
+          print(' [ERROR] ' + str(host) +' IP mistmatch: '+ip,file=file1)
+        with open(filePython+host+".json", 'w') as jsonFormFile:
+            jsonForm = json.dumps({host: ip})
+            jsonFormFile.write(jsonForm)
+            print(jsonForm)
+        with open(filePython+host+".yaml", 'w') as yamlFormFile:
+            yamlForm = yaml.dump([{host: ip}])
+            yamlFormFile.write(yamlForm)
+            print(yamlForm)
+        web_ser[host]=ip
 ```
 
 ### Вывод скрипта при запуске при тестировании:
 ```
-root@vagrant:/home/vagrant# vim TestIPsousese.py
-root@vagrant:/home/vagrant# python3.8 TestIPsousese.py
-('wide-docs.l.google.com', ['drive.google.com'], ['142.251.1.194'])
-('googlemail.l.google.com', ['mail.google.com'], ['74.125.131.83', '74.125.131.18', '74.125.131.19', '74.125.131.17'])
-('googlemail.l.google.com', ['mail.google.com'], ['74.125.131.83', '74.125.131.18', '74.125.131.19', '74.125.131.17'])
- [ERROR] drive.google.com IP mistmatch: 142.251.1.194
- [ERROR] mail.google.com IP mistmatch: 74.125.131.83
- [ERROR] google.com IP mistmatch: 209.85.233.102
+('wide-docs.l.google.com', ['drive.google.com'], ['74.125.205.194'])
+('googlemail.l.google.com', ['mail.google.com'], ['64.233.165.83', '64.233.165.17', '64.233.165.18', '64.233.165.19'])
+('googlemail.l.google.com', ['mail.google.com'], ['64.233.165.83', '64.233.165.17', '64.233.165.18', '64.233.165.19'])
+{"drive.google.com": "74.125.205.194"}
+- drive.google.com: 74.125.205.194
+
+{"mail.google.com": "64.233.165.83"}
+- mail.google.com: 64.233.165.83
+
+{"google.com": "173.194.73.138"}
+- google.com: 173.194.73.138
+```
+
+### json-файл(ы), который(е) записал ваш скрипт:
+```json
+vagrant@vagrant:~$ cat *.json
+{"drive.google.com": "74.125.205.194"}{"google.com": "173.194.73.138"}{"mail.google.com": "64.233.165.83"}
+```
+
+### yml-файл(ы), который(е) записал ваш скрипт:
+```yaml
+vagrant@vagrant:~$ cat *.yaml
+- drive.google.com: 74.125.205.194
+- google.com: 173.194.73.138
+- mail.google.com: 64.233.165.83
+```
+### Общий вывод:
+```
+$ ls filePython.py*
+filePython.py                       filePython.pygoogle.com.json       filePython.pymail.google.com.yaml
+filePython.pydrive.google.com.json  filePython.pygoogle.com.yaml
+filePython.pydrive.google.com.yaml  filePython.pymail.google.com.json
+
+$ cat filePython.py*
+ [ERROR] drive.google.com IP mistmatch: 74.125.131.194
+ [ERROR] mail.google.com IP mistmatch: 64.233.162.19
+ [ERROR] google.com IP mistmatch: 173.194.220.101
+ [ERROR] drive.google.com IP mistmatch: 64.233.165.194
+ [ERROR] mail.google.com IP mistmatch: 173.194.222.18
+ [ERROR] google.com IP mistmatch: 173.194.220.101
+ [ERROR] drive.google.com IP mistmatch: 64.233.165.194
+ [ERROR] mail.google.com IP mistmatch: 64.233.162.17
+ [ERROR] google.com IP mistmatch: 173.194.222.102
+ [ERROR] drive.google.com IP mistmatch: 64.233.161.194
+ [ERROR] drive.google.com IP mistmatch: 64.233.165.194
+ [ERROR] drive.google.com IP mistmatch: 74.125.205.194
+ [ERROR] mail.google.com IP mistmatch: 64.233.165.83
+ [ERROR] google.com IP mistmatch: 173.194.73.138
+{"drive.google.com": "74.125.205.194"}- drive.google.com: 74.125.205.194
+{"google.com": "173.194.73.138"}- google.com: 173.194.73.138
+{"mail.google.com": "64.233.165.83"}- mail.google.com: 64.233.165.83
 ```
