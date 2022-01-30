@@ -107,3 +107,175 @@
 виртуальные среды. Данная технология в полной мере может повысить производительность систем виртуализации и упростить жизнь разработчикам.
 ```
 ---
+# Домашнее задание к занятию "5.3. Введение. Экосистема. Архитектура. Жизненный цикл Docker контейнера"
+
+---
+
+## Задача 1
+
+Сценарий выполения задачи:
+
+- создайте свой репозиторий на https://hub.docker.com;
+- выберете любой образ, который содержит веб-сервер Nginx;
+- создайте свой fork образа;
+- реализуйте функциональность:
+запуск веб-сервера в фоне с индекс-страницей, содержащей HTML-код ниже:
+```
+<html>
+<head>
+Hey, Netology
+</head>
+<body>
+<h1>I’m DevOps Engineer!</h1>
+</body>
+</html>
+```
+#Ответ
+```bash
+sudo docker pull nginx
+
+sudo docker run -it --rm -d -p 8080:80 --name my-nginx nginx
+sudo docker stop my-nginx
+sudo mkdir -p /home/my-nginx/
+sudo vim /home/my-nginx/index.html
+```
+```bash
+<html>
+<head>
+Hey, Netology
+</head>
+<body>
+<h1>I’m Alehandro Vas!</h1>
+</body>
+</html>
+```
+```bash
+sudo docker run -it --rm -p 8080:80 --name my-nginx -v /home/my-nginx/:/usr/share/nginx/html:ro -d nginx/html:ro -d nginx
+sudo docker stop my-nginx
+cd /home/my-nginx/
+sudo vim Dockerfile
+```
+```bash
+FROM nginx
+
+MAINTAINER Alehandro Vas
+
+ENV TZ=Europe/Moscow
+
+COPY index.html /usr/share/nginx/html
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+CMD [ "nginx" ]
+```
+```bash
+sudo docker build -t alexvas/my-nginx:1 .
+sudo docker run -d -p 8080:80 alexvas/my-nginx:1
+docker login -u
+sudo docker tag alexvas/my-nginx:1 zliden9/nginx:v1
+ad@ad-VirtualBox:/home/my-nginx$ sudo docker push zliden9/nginx:v1
+The push refers to repository [docker.io/zliden9/nginx]
+65d938879d1a: Pushed
+5b637012c075: Pushed
+762b147902c0: Pushed
+235e04e3592a: Pushed
+6173b6fa63db: Pushed
+9a94c4a55fe4: Pushed
+9a3a6af98e18: Pushed
+7d0ebbe3f5d2: Pushed
+v1: digest: sha256:fa34662236ad11a411f0cc32e26a9a49637b0826433ea93ec0bafdc513448c41 size: 1984
+```
+Опубликуйте созданный форк в своем репозитории и предоставьте ответ в виде ссылки на https://hub.docker.com/username_repo.
+```
+https://hub.docker.com/r/zliden9/nginx/tags
+```
+## Задача 2
+
+Посмотрите на сценарий ниже и ответьте на вопрос:
+"Подходит ли в этом сценарии использование Docker контейнеров или лучше подойдет виртуальная машина, физическая машина? Может быть возможны разные варианты?"
+
+Детально опишите и обоснуйте свой выбор.
+
+--
+
+Сценарий:
+
+- Высоконагруженное монолитное java веб-приложение;
+```
+Лучше всего подойдёт физическая машина так как сервис очень прожорливый.
+так как приложение мололитное, то нет смысла разбивать его по частам и размазывать по виртуалкам.
+
+```
+- Nodejs веб-приложение;
+```
+Зависит от нагруженности системы, так как это платформа для взаимодействия с разными сервисами то есть смысл
+размазать его по виртуальной среде типа VmVare в кластере, в случае если нагрузка достатосно низкая то
+можно воспользоваться docker-compouse
+```
+- Мобильное приложение c версиями для Android и iOS;
+```
+Мобильные приложение по умолчанию не может быть высоконагруженным отнасительно серверных мощьностей.
+Отличным вариантом будет Docker с использованием tag для контроля версионности.
+```
+- Шина данных на базе Apache Kafka;
+```
+Сервис предпологающий большую нагрузку с большим колличеством сетевых запросов, в таком случае лучшим вариантом будет кластер с
+размазанной топологией для увеличения пропускной способности и вычислительных мощьностей.
+```
+- Elasticsearch кластер для реализации логирования продуктивного веб-приложения - три ноды elasticsearch, два logstash и две ноды kibana;
+```
+Для данной задачи отлично подойдёт Docker-compouse так как сервисы не предпологают высокую нагрузку но требуют некоторую оркестрацию и
+постоянною связь, которую можно будет настроить также средствами Docker в рамках созданной внутри него сети.
+```
+- Мониторинг-стек на базе Prometheus и Grafana;
+```
+Лучше всего подойдёт вариант  с докером, так как некоторое колличество сервисов средней прожорливости можно развернуть в докер кластере
+и организовать таким образом их мониторинг и оркестрацию инструментами докера.
+```
+- MongoDB, как основное хранилище данных для java-приложения;
+```
+В данном случае подходит вариант с виртуальной машиной с настроенным резервированием, либо контейнер если приложение установленно
+на тойже машине. Первоочерезное для всех ДБ это резервирование, по этой причине виртуальная машина имеет больше возможностей, включая быстрый перенос на новое жедезо.
+```
+- Gitlab сервер для реализации CI/CD процессов и приватный (закрытый) Docker Registry.
+```
+В этом случае можно организовать кантениризацию всего процесса так как это упростит взаимодействие всех сервисов и доступность к Registry.
+С другой стороны если потребуется более чёткое разделение и более безопасная среда то виртуальные машины с этим справятся лучше.
+```
+
+## Задача 3
+
+- Запустите первый контейнер из образа ***centos*** c любым тэгом в фоновом режиме, подключив папку ```/data``` из текущей рабочей директории на хостовой машине в ```/data``` контейнера;
+- Запустите второй контейнер из образа ***debian*** в фоновом режиме, подключив папку ```/data``` из текущей рабочей директории на хостовой машине в ```/data``` контейнера;
+- Подключитесь к первому контейнеру с помощью ```docker exec``` и создайте текстовый файл любого содержания в ```/data```;
+- Добавьте еще один файл в папку ```/data``` на хостовой машине;
+- Подключитесь во второй контейнер и отобразите листинг и содержание файлов в ```/data``` контейнера.
+```
+Host:
+mkdir data
+ad@ad-VirtualBox:~/data$ pwd
+/home/ad/data
+sudo docker run -it -d -v /home/ad/data/:/usr/share/data centos
+sudo docker rename heuristic_thompson centos1
+sudo docker run -it -d -v /home/ad/data/:/usr/share/data debian
+sudo docker rename relaxed_neumann debian1
+ad@ad-VirtualBox:~/data$ sudo docker ps
+CONTAINER ID   IMAGE     COMMAND       CREATED              STATUS              PORTS     NAMES
+bcf53e287abe   debian    "bash"        31 seconds ago       Up 30 seconds                 debian1
+677c59e2ac01   centos    "/bin/bash"   About a minute ago   Up About a minute             centos1
+vim host1
+```
+```
+Centos:
+ad@ad-VirtualBox:~/data$ sudo docker exec -it centos1 /bin/bash
+[root@677c59e2ac01 /]# cd /usr/share/data/
+[root@677c59e2ac01 data]# vi centos1
+[root@677c59e2ac01 data]# ls
+centos1  host1
+```
+```
+Debian:
+ad@ad-VirtualBox:~/data$ sudo docker exec -it debian1 /bin/bash
+root@bcf53e287abe:/# cd /usr/share/data/
+root@bcf53e287abe:/usr/share/data# ls
+centos1  host1
+```
