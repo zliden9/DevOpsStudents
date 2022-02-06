@@ -26,7 +26,8 @@
 <p align="center">
   <img width="1200" height="600" src="./assets/yc_01.png">
 </p>
-----
+-
+
 ![yandex2](https://user-images.githubusercontent.com/92779046/152690425-7d81c55e-ab7f-47e0-84e1-c8ad9ec321e6.PNG)
 
 
@@ -39,5 +40,6 @@
 <p align="center">
   <img width="1200" height="600" src="./assets/yc_02.png">
 </p>
----
+-
+
 ![Graphana](https://user-images.githubusercontent.com/92779046/152690466-568c90e8-8c92-48ae-ae91-fe8f91546088.PNG)
