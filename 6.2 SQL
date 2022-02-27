@@ -1,0 +1,208 @@
+# Домашнее задание к занятию "6.2. SQL"
+
+## Задача 1
+
+Используя docker поднимите инстанс PostgreSQL (версию 12) c 2 volume, 
+в который будут складываться данные БД и бэкапы.
+
+Приведите получившуюся команду или docker-compose манифест.
+```
+ad@ad-VirtualBox:~$ sudo docker pull postgres:12
+[sudo] password for ad:
+12: Pulling from library/postgres
+5eb5b503b376: Already exists
+daa0467a6c48: Pull complete
+7cf625de49ef: Pull complete
+bb8afcc973b2: Pull complete
+c74bf40d29ee: Pull complete
+2ceaf201bb22: Pull complete
+1255f255c0eb: Pull complete
+12a9879c7aa1: Pull complete
+f7ca80cc6dd3: Pull complete
+6714db455645: Pull complete
+ee4f5626bf60: Pull complete
+621bb0c2ae77: Pull complete
+a19e980f0a72: Pull complete
+Digest: sha256:505d023f030cdea84a42d580c2a4a0e17bbb3e91c30b2aea9c02f2dfb10325ba
+Status: Downloaded newer image for postgres:12
+docker.io/library/postgres:12
+
+ad@ad-VirtualBox:~$ sudo docker volume create vol1
+vol1
+ad@ad-VirtualBox:~$ sudo docker volume create vol2
+vol2
+ad@ad-VirtualBox:~$ sudo docker volume ls
+DRIVER    VOLUME NAME
+local     vol1
+local     vol2
+
+ad@ad-VirtualBox:/opt/docker/postgresql$ sudo docker run -it -d -e POSTGRES_PASSWORD=postgres -p 5432:5432 -v vol1:/var/lib/postgresql/data -v vol2:/var/lib/postgresql -d postgres:12
+e9e76a4b023554ed64bbed70fb44507a7ac8bd51e54b69a90a4a695242a67d08
+ad@ad-VirtualBox:/opt/docker/postgresql$ sudo docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+e9e76a4b0235   postgres:12   "docker-entrypoint.s…"   39 seconds ago   Up 38 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   sad_spence
+ad@ad-VirtualBox:/opt/docker/postgresql$ sudo docker rename sad_spence posgr-dock
+ad@ad-VirtualBox:/opt/docker/postgresql$ sudo docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED              STATUS              PORTS                                       NAMES
+e9e76a4b0235   postgres:12   "docker-entrypoint.s…"   About a minute ago   Up About a minute   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   posgr-dock
+```
+## Задача 2
+
+В БД из задачи 1: 
+- создайте пользователя test-admin-user и БД test_db
+sudo docker exec -it posgr-dock /bin/bash
+su - postgres
+psql -Upostgres template1
+template1=# createuser -s --replication test-admin-user
+template1=# select * from pg_user;
+     usename     | usesysid | usecreatedb | usesuper | userepl | usebypassrls |  passwd  | valuntil | useconfig
+-----------------+----------+-------------+----------+---------+--------------+----------+----------+-----------
+ postgres        |       10 | t           | t        | t       | t            | ******** |          |
+ test-admin-user |    16384 | t           | t        | t       | f            | ******** |          |
+(2 rows)
+
+
+- в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
+- предоставьте привилегии на все операции пользователю test-admin-user на таблицы БД test_db
+- создайте пользователя test-simple-user  
+- предоставьте пользователю test-simple-user права на SELECT/INSERT/UPDATE/DELETE данных таблиц БД test_db
+
+Таблица orders:
+- id (serial primary key)
+- наименование (string)
+- цена (integer)
+
+CREATE TABLE orders 
+(
+id integer, 
+name text, 
+price integer, 
+PRIMARY KEY (id) 
+);
+
+Таблица clients:
+- id (serial primary key)
+- фамилия (string)
+- страна проживания (string, index)
+- заказ (foreign key orders)
+
+CREATE TABLE clients 
+(
+	id integer PRIMARY KEY,
+	lastname text,
+	country text,
+	booking integer,
+	FOREIGN KEY (booking) REFERENCES orders (Id)
+);
+
+CREATE ROLE "test-simple-user" NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT LOGIN;
+GRANT SELECT ON TABLE public.clients TO "test-simple-user";
+GRANT INSERT ON TABLE public.clients TO "test-simple-user";
+GRANT UPDATE ON TABLE public.clients TO "test-simple-user";
+GRANT DELETE ON TABLE public.clients TO "test-simple-user";
+GRANT SELECT ON TABLE public.orders TO "test-simple-user";
+GRANT INSERT ON TABLE public.orders TO "test-simple-user";
+GRANT UPDATE ON TABLE public.orders TO "test-simple-user";
+GRANT DELETE ON TABLE public.orders TO "test-simple-user";
+
+Приведите:
+- итоговый список БД после выполнения пунктов выше,
+```
+
+```
+- описание таблиц (describe)
+```
+
+```
+- SQL-запрос для выдачи списка пользователей с правами над таблицами test_db
+```
+
+```
+- список пользователей с правами над таблицами test_db
+```
+
+```
+## Задача 3
+
+Используя SQL синтаксис - наполните таблицы следующими тестовыми данными:
+
+Таблица orders
+
+|Наименование|цена|
+|------------|----|
+|Шоколад| 10 |
+|Принтер| 3000 |
+|Книга| 500 |
+|Монитор| 7000|
+|Гитара| 4000|
+
+Таблица clients
+
+|ФИО|Страна проживания|
+|------------|----|
+|Иванов Иван Иванович| USA |
+|Петров Петр Петрович| Canada |
+|Иоганн Себастьян Бах| Japan |
+|Ронни Джеймс Дио| Russia|
+|Ritchie Blackmore| Russia|
+
+Используя SQL синтаксис:
+- вычислите количество записей для каждой таблицы 
+```
+
+```
+- приведите в ответе:
+    - запросы 
+```
+
+```
+    - результаты их выполнения.
+```
+
+```
+## Задача 4
+
+Часть пользователей из таблицы clients решили оформить заказы из таблицы orders.
+
+Используя foreign keys свяжите записи из таблиц, согласно таблице:
+
+|ФИО|Заказ|
+|------------|----|
+|Иванов Иван Иванович| Книга |
+|Петров Петр Петрович| Монитор |
+|Иоганн Себастьян Бах| Гитара |
+
+Приведите SQL-запросы для выполнения данных операций.
+```
+
+```
+Приведите SQL-запрос для выдачи всех пользователей, которые совершили заказ, а также вывод данного запроса.
+``` 
+
+```
+Подсказк - используйте директиву `UPDATE`.
+
+## Задача 5
+
+Получите полную информацию по выполнению запроса выдачи всех пользователей из задачи 4 
+(используя директиву EXPLAIN).
+
+Приведите получившийся результат и объясните что значат полученные значения.
+```
+
+```
+## Задача 6
+
+Создайте бэкап БД test_db и поместите его в volume, предназначенный для бэкапов (см. Задачу 1).
+
+Остановите контейнер с PostgreSQL (но не удаляйте volumes).
+
+Поднимите новый пустой контейнер с PostgreSQL.
+
+Восстановите БД test_db в новом контейнере.
+
+Приведите список операций, который вы применяли для бэкапа данных и восстановления. 
+```
+
+```
+---
