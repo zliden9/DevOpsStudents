@@ -50,16 +50,49 @@ e9e76a4b0235   postgres:12   "docker-entrypoint.s…"   About a minute ago   Up 
 
 В БД из задачи 1: 
 - создайте пользователя test-admin-user и БД test_db
-sudo docker exec -it posgr-dock /bin/bash
-su - postgres
-psql -Upostgres template1
-template1=# createuser -s --replication test-admin-user
-template1=# select * from pg_user;
-     usename     | usesysid | usecreatedb | usesuper | userepl | usebypassrls |  passwd  | valuntil | useconfig
------------------+----------+-------------+----------+---------+--------------+----------+----------+-----------
- postgres        |       10 | t           | t        | t       | t            | ******** |          |
- test-admin-user |    16384 | t           | t        | t       | f            | ******** |          |
-(2 rows)
+
+ad@ad-VirtualBox:/opt/docker/postgresql$ sudo docker exec -it posgr-dock /bin/bash
+root@e9e76a4b0235:/# su - postgres
+postgres@e9e76a4b0235:~$ psql -Upostgres
+postgres=# createuser -s --replication test-admin-user
+postgres=# CREATE DATABASE test_db OWNER test-admin-user
+psql (12.10 (Debian 12.10-1.pgdg110+1))
+postgres=# \du
+                                      List of roles
+    Role name    |                         Attributes                         | Member of
+-----------------+------------------------------------------------------------+-----------
+ postgres        | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ test-admin-user | Superuser, Create role, Create DB, Replication             | {}
+postgres=# \l
+                                    List of databases
+   Name    |      Owner      | Encoding |  Collate   |   Ctype    |   Access privileges
+-----------+-----------------+----------+------------+------------+-----------------------
+ postgres  | postgres        | UTF8     | en_US.utf8 | en_US.utf8 |
+ template0 | postgres        | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |                 |          |            |            | postgres=CTc/postgres
+ template1 | postgres        | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |                 |          |            |            | postgres=CTc/postgres
+ test_db   | test-admin-user | UTF8     | en_US.utf8 | en_US.utf8 |
+(4 rows)
+
+test_db=# create table orders
+test_db-# (
+test_db(# id integer,
+test_db(# name text,
+test_db(# price integer,
+test_db(# PRIMARY KEY (id)
+test_db(# );
+CREATE TABLE
+test_db=# create table clients
+test_db-# (
+test_db(# id integer PRIMARY KEY,
+test_db(# lastname text,
+test_db(# county text,
+test_db(# booking integer,
+test_db(# FOREIGN KEY (booking) REFERENCES orders (id)
+test_db(# );
+CREATE TABLE
+
 
 
 - в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
