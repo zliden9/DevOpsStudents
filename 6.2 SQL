@@ -75,6 +75,7 @@ postgres=# \l
  test_db   | test-admin-user | UTF8     | en_US.utf8 | en_US.utf8 |
 (4 rows)
 
+- в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
 test_db=# create table orders
 test_db-# (
 test_db(# id integer,
@@ -92,26 +93,21 @@ test_db(# booking integer,
 test_db(# FOREIGN KEY (booking) REFERENCES orders (id)
 test_db(# );
 CREATE TABLE
-
-
-
-- в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
 - предоставьте привилегии на все операции пользователю test-admin-user на таблицы БД test_db
+test_db-# GRANT ALL PRIVILEGES ON test_db TO test-admin-user;
+
 - создайте пользователя test-simple-user  
 - предоставьте пользователю test-simple-user права на SELECT/INSERT/UPDATE/DELETE данных таблиц БД test_db
+test_db=# CREATE USER "test-simple-user" WITH NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT LOGIN;
+test_db=# GRANT SELECT ON DATABASE test_db TO "test-simple-user"
+test_db-# GRANT INSERT ON DATABASE test_db TO "test-simple-user"
+test_db-# GRANT UPDATE ON DATABASE test_db TO "test-simple-user"
+test_db-# GRANT DELETE ON DATABASE test_db TO "test-simple-user"
 
 Таблица orders:
 - id (serial primary key)
 - наименование (string)
 - цена (integer)
-
-CREATE TABLE orders 
-(
-id integer, 
-name text, 
-price integer, 
-PRIMARY KEY (id) 
-);
 
 Таблица clients:
 - id (serial primary key)
@@ -119,14 +115,7 @@ PRIMARY KEY (id)
 - страна проживания (string, index)
 - заказ (foreign key orders)
 
-CREATE TABLE clients 
-(
-	id integer PRIMARY KEY,
-	lastname text,
-	country text,
-	booking integer,
-	FOREIGN KEY (booking) REFERENCES orders (Id)
-);
+
 
 CREATE ROLE "test-simple-user" NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT LOGIN;
 GRANT SELECT ON TABLE public.clients TO "test-simple-user";
