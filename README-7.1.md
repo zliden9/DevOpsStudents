@@ -93,5 +93,7 @@ is 1.1.7. You can update by downloading from https://www.terraform.io/downloads.
 # Ответ
 ```
 https://learn.hashicorp.com/tutorials/terraform/versions
+
+https://jhooq.com/install-terrafrom/#4-upgrade-terraform-using-tfenv
 ```
 ---
