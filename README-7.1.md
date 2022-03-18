@@ -91,9 +91,20 @@ is 1.1.7. You can update by downloading from https://www.terraform.io/downloads.
 или виртуальной машине.
 
 # Ответ
-```
-https://learn.hashicorp.com/tutorials/terraform/versions
+```bash
+ad@ad-VirtualBox:~$ tfenv use 0.14.11
+Switching default version to v0.14.11
+Switching completed
+ad@ad-VirtualBox:~$ terraform -v
+Terraform v0.14.11
 
-https://jhooq.com/install-terrafrom/#4-upgrade-terraform-using-tfenv
+Your version of Terraform is out of date! The latest version
+is 1.1.7. You can update by downloading from https://www.terraform.io/downloads.html
+ad@ad-VirtualBox:~$ tfenv use 1.1.7
+Switching default version to v1.1.7
+Switching completed
+ad@ad-VirtualBox:~$ terraform -v
+Terraform v1.1.7
+on linux_amd64
 ```
 ---
