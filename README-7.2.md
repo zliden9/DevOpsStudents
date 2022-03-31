@@ -115,8 +115,10 @@ Note: You didn't use the -out option to save this plan, so Terraform can't guara
 ```
 В качестве результата задания предоставьте:
 1. Ответ на вопрос: при помощи какого инструмента (из разобранных на прошлом занятии) можно создать свой образ ami?
+```
 При помощи Packer
-3. Ссылку на репозиторий с исходной конфигурацией терраформа.  
+```
+2. Ссылку на репозиторий с исходной конфигурацией терраформа.  
 ```
 https://github.com/zliden9/DevOpsStudents/blob/circleci-project-setup/terraform/7.2/main.tf
 https://github.com/zliden9/DevOpsStudents/blob/circleci-project-setup/terraform/7.2/versions.tf
