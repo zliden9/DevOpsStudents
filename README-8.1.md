@@ -178,5 +178,8 @@ ubuntu                     : ok=3    changed=0    unreachable=0    failed=0    s
 ### Как оформить ДЗ?
 
 Выполненное домашнее задание пришлите ссылкой на .md-файл в вашем репозитории.
-
+``
+ДЗ
+https://github.com/zliden9/DevOpsStudents/tree/circleci-project-setup/ansible-8/playbook
+```
 ---
