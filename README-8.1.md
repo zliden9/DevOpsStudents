@@ -39,7 +39,8 @@ ad@ad-VirtualBox:~/git/DevOpsStudents/ansible-8/playbook$ cat group_vars/all/exa
 ```
 3. Воспользуйтесь подготовленным (используется `docker`) или создайте собственное окружение для проведения дальнейших испытаний.
 ```bash
-sudo docker run -d -h centos7 --name centos7 centos:7 /bin/bash
+sudo docker run -d -ith centos7 --name centos7 centos:7 /bin/bash
+
 
 ```
 4. Проведите запуск playbook на окружении из `prod.yml`. Зафиксируйте полученные значения `some_fact` для каждого из `managed host`.
