@@ -40,7 +40,7 @@ ad@ad-VirtualBox:~/git/DevOpsStudents/ansible-8/playbook$ cat group_vars/all/exa
 3. Воспользуйтесь подготовленным (используется `docker`) или создайте собственное окружение для проведения дальнейших испытаний.
 ```bash
 sudo docker run -d -ith centos7 --name centos7 centos:7 /bin/bash
-sudo docker run -d -ith centos7 --name ubuntu ubuntu:latest /bin/bash
+sudo docker run -d -ith ubuntu --name ubuntu ubuntu:latest /bin/bash
 ad@ad-VirtualBox:~/Git/DevOpsStudents/ansible-8/playbook$ sudo docker ps
 CONTAINER ID   IMAGE           COMMAND       CREATED          STATUS         PORTS     NAMES
 463915417a3d   ubuntu:latest   "/bin/bash"   11 seconds ago   Up 8 seconds             ubuntu
