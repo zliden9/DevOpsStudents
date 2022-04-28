@@ -40,8 +40,11 @@ ad@ad-VirtualBox:~/git/DevOpsStudents/ansible-8/playbook$ cat group_vars/all/exa
 3. Воспользуйтесь подготовленным (используется `docker`) или создайте собственное окружение для проведения дальнейших испытаний.
 ```bash
 sudo docker run -d -ith centos7 --name centos7 centos:7 /bin/bash
-
-
+sudo docker run -d -ith centos7 --name ubuntu ubuntu:latest /bin/bash
+ad@ad-VirtualBox:~/Git/DevOpsStudents/ansible-8/playbook$ sudo docker ps
+CONTAINER ID   IMAGE           COMMAND       CREATED          STATUS         PORTS     NAMES
+463915417a3d   ubuntu:latest   "/bin/bash"   11 seconds ago   Up 8 seconds             ubuntu
+00d7ac57057a   centos:7        "/bin/bash"   3 minutes ago    Up 3 minutes             centos7
 ```
 4. Проведите запуск playbook на окружении из `prod.yml`. Зафиксируйте полученные значения `some_fact` для каждого из `managed host`.
 5. Добавьте факты в `group_vars` каждой из групп хостов так, чтобы для `some_fact` получились следующие значения: для `deb` - 'deb default fact', для `el` - 'el default fact'.
