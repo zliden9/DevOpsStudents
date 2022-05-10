@@ -10,3 +10,17 @@ ad@ad-VirtualBox:~/8.2/playbook$ sudo docker ps
 CONTAINER ID   IMAGE        COMMAND       CREATED          STATUS          PORTS     NAMES
 62ad2e4ba193   python:3.9   "/bin/bash"   3 seconds ago    Up 2 seconds              vector-01
 558134334ba5   python:3.9   "/bin/bash"   28 seconds ago   Up 27 seconds             clickhouse-01
+
+# Vector play
+- name: Install Vector
+  hosts: vector
+  tasks:
+    - name: Install Vector | Download distrib
+      ansible.builtin.get_url:
+        url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm"
+        dest: "./vector-{{ vector_version }}.rpm"
+        mode: 0644
+    - name: Install Vector | Install packages
+      become: true
+      ansible.builtin.yum:
+        name: "vector-{{ vector_version }}.rpm"
