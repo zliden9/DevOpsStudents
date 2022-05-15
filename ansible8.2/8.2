@@ -31,7 +31,6 @@ CONTAINER ID   IMAGE        COMMAND       CREATED          STATUS          PORTS
 
 
 ```bash
-
 ad@ad-VirtualBox:~/8.2/playbook$ ansible-playbook site.yml -i inventory/prod.yml
  
 PLAY [Install Clickhouse] ******************************************************
@@ -76,4 +75,5 @@ changed: [application-01]
 PLAY RECAP *********************************************************************
 application-01             : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 clickhouse-01              : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=1    ignored=0 
+
 ```
