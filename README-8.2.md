@@ -1,7 +1,7 @@
 # Домашнее задание к занятию "08.02 Работа с Playbook"
 
 ---
-- name: Install Clickhouse - название Play
+-- name: Install Clickhouse - название Play
 - name: Install Clickhouse  
   hosts: clickhouse
   handlers:
