@@ -28,3 +28,51 @@ CONTAINER ID   IMAGE        COMMAND       CREATED          STATUS          PORTS
       become: true
       ansible.builtin.yum:
         name: "vector-{{ vector_version }}.rpm"
+
+
+```bash
+ad@ad-VirtualBox:~/8.2/playbook$ ansible-playbook site.yml -i inventory/prod.yml
+ 
+PLAY [Install Clickhouse] ******************************************************
+
+TASK [Gathering Facts] *********************************************************
+The authenticity of host '51.250.14.219 (51.250.14.219)' can't be established.
+ECDSA key fingerprint is SHA256:qgbzsEEyTVnKt6SOrHTTQwI9Lu9q9Vdx/bgMqfvbB4Q.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? ues
+Please type 'yes', 'no' or the fingerprint: yes
+ok: [clickhouse-01]
+
+TASK [Get clickhouse distrib] **************************************************
+changed: [clickhouse-01] => (item=clickhouse-client)
+changed: [clickhouse-01] => (item=clickhouse-server)
+failed: [clickhouse-01] (item=clickhouse-common-static) => {"ansible_loop_var": "item", "changed": false, "dest": "./clickhouse-common-static-22.3.3.44.rpm", "elapsed": 0, "item": "clickhouse-common-static", "msg": "Request failed", "response": "HTTP Error 404: Not Found", "status_code": 404, "url": "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-22.3.3.44.noarch.rpm"}
+
+TASK [Get clickhouse distrib] **************************************************
+changed: [clickhouse-01]
+
+TASK [Install clickhouse packages] *********************************************
+changed: [clickhouse-01]
+
+TASK [Flush handlers] **********************************************************
+
+RUNNING HANDLER [Start clickhouse service] *************************************
+changed: [clickhouse-01]
+
+TASK [Create database] *********************************************************
+changed: [clickhouse-01]
+
+PLAY [Install Vector] **********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [application-01]
+
+TASK [Install Vector | Download distrib] ***************************************
+changed: [application-01]
+
+TASK [Install Vector | Install packages] ***************************************
+changed: [application-01]
+
+PLAY RECAP *********************************************************************
+application-01             : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+clickhouse-01              : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=1    ignored=0 
+```
