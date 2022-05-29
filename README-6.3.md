@@ -231,11 +231,70 @@ mysql> SHOW PROFILES;
 
 Измените его согласно ТЗ (движок InnoDB):
 - Скорость IO важнее сохранности данных
+```
+# 0 - скорость
+# 1 - сохранность
+# 2 - универсальный параметр
+innodb_flush_log_at_trx_commit = 0 
+```
 - Нужна компрессия таблиц для экономии места на диске
+```
+innodb_file_format=Barracuda
+```
 - Размер буффера с незакомиченными транзакциями 1 Мб
+```
+innodb_log_buffer_size=1M
+```
 - Буффер кеширования 30% от ОЗУ
+```
+key_buffer_size = 500М
+```
 - Размер файла логов операций 100 Мб
-
+```
+max_binlog_size	= 100M
+```
 Приведите в ответе измененный файл `my.cnf`.
+```bash
+root@5f698fd136d9:/etc/mysql# apt update
+root@5f698fd136d9:/etc/mysql# apt install vim
+root@5f698fd136d9:/etc/mysql# vim my.cnf
+root@5f698fd136d9:/etc/mysql# cat my.cnf
+# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
+#
+# The MySQL  Server configuration file.
+#
+# For explanations see
+# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+
+[mysqld]
+pid-file        = /var/run/mysqld/mysqld.pid
+socket          = /var/run/mysqld/mysqld.sock
+datadir         = /var/lib/mysql
+secure-file-priv= NULL
+
+# InnoDB
+innodb_flush_log_at_trx_commit = 0 
+innodb_file_format=Barracuda
+innodb_log_buffer_size=1M
+key_buffer_size = 500М
+max_binlog_size	= 100M
+
+# Custom config should go here
+!includedir /etc/mysql/conf.d/
+root@5f698fd136d9:/etc/mysql# 
+```
 ---
