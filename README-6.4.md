@@ -165,7 +165,7 @@ test_database=# \d public.orders_old
  title   |        16
  price   |         4
 (3 rows)
-#Создаём новую икопируем данные из старой таблицы.
+#Создаём новую и копируем данные из старой таблицы.
 test_database=# create table public.orders (like public.orders_old including all);
 CREATE TABLE
 #Создаём связанные таблицы в которые будут складываться сортированные данные.
